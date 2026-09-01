@@ -1,28 +1,32 @@
 # usefull-skills
 
-Small, self-contained skills for AI coding agents. Each folder is one
-[Claude Code skill](https://docs.claude.com/en/docs/claude-code/skills) — install it once and
-it activates when it is relevant.
+Small, self-contained skills for AI coding agents, distributed as a
+[Claude Code plugin marketplace](https://code.claude.com/docs/en/plugin-marketplaces).
+Install once — every skill added here later arrives with a single update command.
 
 ## Skills
 
 | Skill | What it does |
 |-------|--------------|
-| [**project-map-skill**](./project-map-skill) | Maintains `.agent/project-map/`, a committed index of where each feature's code lives, so agents jump to the right files instead of searching the whole repo every task. Catches its own stale entries and logs the tokens it saves. |
+| **project-map-skill** | Maintains `.agent/project-map/`, a committed index of where each feature's code lives, so agents jump to the right files instead of searching the whole repo every task. Catches its own stale entries and tracks the tokens it saves. |
 
 ## Install
 
-```sh
-git clone https://github.com/alam-gir/usefull-skills.git
-ln -s "$(pwd)/usefull-skills/project-map-skill" ~/.claude/skills/project-map-skill
+In Claude Code:
+
+```
+/plugin marketplace add alam-gir/usefull-skills
+/plugin install project-map-skill@usefull-skills
 ```
 
-- **Update** — `git pull` in the clone.
-- **Uninstall** — delete the symlink.
-- **One project only** — symlink into that project's `.claude/skills/` instead of `~/.claude/skills/`.
+- **Update** (also picks up newly added skills) — `/plugin marketplace update`
+- **Uninstall** — `/plugin uninstall project-map-skill@usefull-skills`
+- **Team-wide** — commit `.claude/settings.json` with the marketplace and plugin listed under
+  `extraKnownMarketplaces` / `enabledPlugins` so every clone gets it automatically.
 
-Non-Claude agents: point them at a skill's `PROTOCOL.md`, or just let one build the map — any
-agent can then read `.agent/project-map/README.md`.
+Other agents (Cursor, etc.): they can't use the plugin, but the map itself is plain Markdown.
+Let a Claude session build it once, or point your agent at
+`plugins/project-map-skill/PROTOCOL.md`.
 
 ## How project-map-skill works
 
@@ -31,8 +35,28 @@ agent can then read `.agent/project-map/README.md`.
    navigates by symbol anchors. No repo-wide search.
 3. **After a structural change** — it updates the area files it touched. Stale entries are
    caught when used and repaired on the spot.
-4. The map is committed, so a fresh clone is already navigable and the whole team's agents
-   benefit. `savings-log.csv` stays local to each developer.
+4. The map is committed, so a fresh clone is already navigable. `savings-log.csv` stays local;
+   run `.agent/project-map/savings-report.sh` (or `--html`) to see what it saved.
+
+## Repository layout
+
+```
+.claude-plugin/marketplace.json     catalog of the skills below
+plugins/<skill>/                     one folder per skill
+  .claude-plugin/plugin.json
+  SKILL.md                           + any support files
+```
+
+### Adding a skill
+
+1. `mkdir -p plugins/<name>/.claude-plugin`
+2. Write `plugins/<name>/SKILL.md` and `plugins/<name>/.claude-plugin/plugin.json`
+   (copy an existing one; start at `"version": "0.1.0"`).
+3. Add one entry to the `plugins` array in `.claude-plugin/marketplace.json`.
+4. Add a row to the table above, commit, push.
+
+Users run `/plugin marketplace update`, then `/plugin install <name>@usefull-skills`.
+To ship a fix to an installed skill, bump its `version` in `plugin.json`.
 
 ## License
 

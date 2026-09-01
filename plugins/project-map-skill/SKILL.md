@@ -31,9 +31,10 @@ Run when `.agent/project-map/index-map.md` is missing, or a task touches an area
    and the root manifest (`package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`, `pom.xml`,
    `Makefile`) for the project summary and any package roots.
 2. Write `index-map.md` with that summary and no areas yet (see [`MAP-FORMAT.md`](MAP-FORMAT.md)).
-3. Copy [`PROTOCOL.md`](PROTOCOL.md) to `.agent/project-map/README.md` and
-   `savings-report.sh` to `.agent/project-map/savings-report.sh`.
-4. Add `.agent/project-map/savings-log.csv` to `.gitignore`.
+3. Copy [`PROTOCOL.md`](PROTOCOL.md) and `savings-report.sh` (both beside this `SKILL.md`) to
+   `.agent/project-map/README.md` and `.agent/project-map/savings-report.sh`; `chmod +x` the script.
+4. Add these two lines to `.gitignore`:
+   `.agent/project-map/savings-log.csv` and `.agent/project-map/savings.html`.
 5. If `AGENTS.md` or `CLAUDE.md` exists and has no project-map line, add one:
    `Locate code via .agent/project-map/index-map.md before searching; keep it current (.agent/project-map/README.md).`
 
@@ -48,12 +49,16 @@ area. Otherwise the map grows one area at a time as tasks reach them.
 ## Track savings
 
 When the map saved you a search, append one line to `.agent/project-map/savings-log.csv`
-(header `date,area,est_tokens_saved,note` — create it if missing):
+(header `date,area,tokens_saved,map_cost,note` — create it if missing):
 
 ```
-2026-09-01,auth,8000,found login flow without searching
+2026-09-01,auth,9000,1200,found login flow without searching
 ```
 
-Estimate `est_tokens_saved` as the rough size of the files you would have had to open and read
-to locate that code without the map. Keep it honest; it is a rough figure. The user runs
-`.agent/project-map/savings-report.sh` for the running total — do not maintain a total yourself.
+- `tokens_saved` — rough size of the files you would have opened to locate that code without
+  the map.
+- `map_cost` — what you actually spent this task reading `index-map.md` and the area file(s).
+- Keep the estimates honest and `note` comma-free.
+
+The user runs `.agent/project-map/savings-report.sh` (add `--html` for a visual dashboard) for
+the totals — never maintain a running total yourself.

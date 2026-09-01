@@ -62,12 +62,23 @@ last-synced: <short SHA>
 
 ## `savings-log.csv`
 
+Personal and gitignored. One row per task the map assisted.
+
 ```
-date,area,est_tokens_saved,note
-2026-09-01,auth,8000,found login flow without searching
+date,area,tokens_saved,map_cost,note
+2026-09-01,auth,9000,1200,found login flow without searching
 ```
 
-Keep the `note` free of commas so `savings-report.sh` parses cleanly.
+- `tokens_saved` — rough size of the search the map let the agent skip.
+- `map_cost` — tokens the agent spent reading the index and area file(s) this task.
+- Keep `note` short and comma-free.
+
+`savings-report.sh` reads this file:
+
+```sh
+.agent/project-map/savings-report.sh            # terminal report with bar chart
+.agent/project-map/savings-report.sh --html     # writes .agent/project-map/savings.html
+```
 
 ## Rules
 

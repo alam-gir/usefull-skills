@@ -1,0 +1,14 @@
+{
+  "name": "usefull-skills",
+  "description": "Small, self-contained skills for AI coding agents.",
+  "owner": {
+    "name": "Alamgir & Golam Kibria Raihan"
+  },
+  "plugins": [
+    {
+      "name": "project-map-skill",
+      "source": "./plugins/project-map-skill",
+      "description": "Maintains .agent/project-map/, a committed index of where each feature's code lives, so agents jump to the right files instead of searching the whole repo. Catches its own stale entries and tracks the tokens it saves."
+    }
+  ]
+}
